@@ -14,13 +14,15 @@ const urlDatabase = {
 
 //a function that returns a string of 6 random alphanumeric characters:
 function generateRandomString() {
-  let result = "";
-  let characters =
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  const tempArray = [];
+  const randomString =
+    "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
   for (let i = 0; i < 6; i++) {
-    result += characters.charAt(Math.floor(Math.random() * characters.length));
+    tempArray.push(
+      randomString[Math.floor(Math.random() * randomString.length)]
+    );
   }
-  return result;
+  return tempArray.join("");
 }
 
 app.get("/", (req, res) => {
@@ -45,8 +47,16 @@ app.get("/urls/:id", (req, res) => {
 });
 
 app.post("/urls", (req, res) => {
-  console.log(req.body);
-  res.send("Ok");
+  let shortURL = generateRandomString();
+  urlDatabase[shortURL] = req.body.longURL;
+  res.redirect(`/urls/${shortURL}`);
+});
+
+app.get("/u/:shorturl", (req, res) => {
+  const shortURL = req.params.shorturl;
+  urlDatabase[shortURL]
+    ? res.redirect(urlDatabase[shortURL])
+    : res.send("Error: This is not a valid short URL");
 });
 
 app.listen(PORT, () => {
