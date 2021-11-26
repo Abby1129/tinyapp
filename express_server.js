@@ -46,17 +46,22 @@ app.get("/urls/:id", (req, res) => {
   res.render("urls_show", templateVars);
 });
 
+app.get("/u/:shortURL", (req, res) => {
+  const shortURL = req.params.shortURL;
+  urlDatabase[shortURL]
+    ? res.redirect(urlDatabase[shortURL])
+    : res.send("Error: This is not a valid short URL");
+});
+
 app.post("/urls", (req, res) => {
   let shortURL = generateRandomString();
   urlDatabase[shortURL] = req.body.longURL;
   res.redirect(`/urls/${shortURL}`);
 });
 
-app.get("/u/:shorturl", (req, res) => {
-  const shortURL = req.params.shorturl;
-  urlDatabase[shortURL]
-    ? res.redirect(urlDatabase[shortURL])
-    : res.send("Error: This is not a valid short URL");
+app.post("/urls/:shortURL/delete", (req, res) => {
+  delete urlDatabase[req.params.shortURL];
+  res.redirect("/urls");
 });
 
 app.listen(PORT, () => {
