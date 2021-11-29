@@ -46,19 +46,29 @@ app.get("/urls/:id", (req, res) => {
   res.render("urls_show", templateVars);
 });
 
-app.get("/u/:shortURL", (req, res) => {
-  const shortURL = req.params.shortURL;
+// handles the link to the website. when short url is clicked, long url is triggered
+app.get("/u/:id", (req, res) => {
+  const shortURL = req.params.id;
   urlDatabase[shortURL]
     ? res.redirect(urlDatabase[shortURL])
     : res.send("Error: This is not a valid short URL");
 });
 
+//updates or edit the long url for short url
+app.post("/urls/:id", (req, res) => {
+  urlDatabase[req.params.id] = req.body["longUrl"];
+
+  res.redirect("/urls");
+});
+
+// generates a new shortURL and adds it to the urlDatabase
 app.post("/urls", (req, res) => {
   let shortURL = generateRandomString();
   urlDatabase[shortURL] = req.body.longURL;
   res.redirect(`/urls/${shortURL}`);
 });
 
+//deletes url
 app.post("/urls/:shortURL/delete", (req, res) => {
   delete urlDatabase[req.params.shortURL];
   res.redirect("/urls");
