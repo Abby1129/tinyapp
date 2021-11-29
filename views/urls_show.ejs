@@ -22,6 +22,31 @@
           Short URL: <a href="/u/<%= shortURL %>"><%= shortURL %></a>
         </p>
       </div>
+     
+      <div class="card text-center">
+        <div class="card-body" >
+          <h2 class="card-title">Edit</h2>
+          <form
+            class=" form-inline justify-content-center"
+            action="/urls/<%= shortURL %>"
+            method="post">
+            <div class="form-group>
+              <label for="longUrl">New Url:</label>
+              <input
+                type="text"
+                class="form-control"
+                id="longUrl"
+                name="longUrl"
+                placeholder="http://"
+              value="<%= longURL %>"
+               />
+              <button type="submit" class="btn btn-primary">Update</button>
+            </div>
+          </form>
+        </div>
+      </div>
+      
+      <!-- This is footer, just uncomment when ready -->
       <div class="card-footer text-muted"></div>
     </div>
     <!-- Bootstrap JS -->
