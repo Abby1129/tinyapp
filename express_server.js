@@ -106,13 +106,12 @@ app.get("/urls", (req, res) => {
   if (!req.session.user_id) {
     return res.redirect("/login");
   }
-
-  // const userId = req.cookies.user_id;
   const userId = req.session.user_id;
   const urls = urlsForUser(userId, urlDatabase);
   let templateVars = {
     urls: urls,
     user_id: userId,
+    email: usersDatabase[userId]["email"],
   };
   return res.render("urls_index", templateVars);
 });
@@ -124,6 +123,7 @@ app.get("/urls/new", (req, res) => {
   } else {
     let templateVars = {
       user_id: userId,
+      email: usersDatabase[userId]["email"],
     };
     return res.render("urls_new", templateVars);
   }
@@ -135,18 +135,16 @@ app.get("/register", (req, res) => {
     password: req.body["password"],
     user_id: req.session["user_id"],
   };
-  console.log(templateVars);
   res.render("urls_register", templateVars);
 });
 
 app.get("/urls/:id", (req, res) => {
   const user_id = req.session.user_id;
-  console.log(urlDatabase[req.params.id]);
-  console.log(urlDatabase);
   let templateVars = {
     shortURL: req.params.id,
     longURL: urlDatabase[req.params.id]["longURL"],
     user_id: user_id,
+    email: usersDatabase[userId]["email"],
   };
   res.render("urls_show", templateVars);
 });
