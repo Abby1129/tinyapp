@@ -3,6 +3,9 @@ const morgan = require("morgan");
 const cookieParser = require("cookie-parser");
 const bodyParser = require("body-parser");
 
+const bcrypt = require("bcrypt");
+const saltRounds = 10;
+
 const app = express();
 const PORT = 8080;
 
@@ -53,10 +56,13 @@ function checkEmailExist(email, userDB) {
   return false;
 }
 
-// a function that returns a boolean value indicating whether the email and password match the user in the database of users
+// a function that returns a boolean value indicating whether the email and password match the user in the database of users or not
 function checkEmailAndPasswordExist(email, password, userDb) {
   for (const key in userDb) {
-    if (userDb[key].email === email && userDb[key].password === password) {
+    if (
+      userDb[key].email === email &&
+      bcrypt.compareSync(password, userDb[key].password)
+    ) {
       return true;
     }
   }
@@ -131,7 +137,6 @@ app.get("/login", (req, res) => {
   const templateVars = {
     user_id: req.cookies["user_id"],
   };
-
   res.render("urls_login", templateVars);
 });
 
@@ -190,10 +195,11 @@ app.post("/logout", (req, res) => {
 app.post("/register", (req, res) => {
   const { email, password } = req.body;
   const userID = generateRandomString();
+
   const newUser = {
     id: userID,
     email: email,
-    password: password,
+    password: bcrypt.hashSync(password, saltRounds),
   };
 
   if (email === "" || password === "") {
