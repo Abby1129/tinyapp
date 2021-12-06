@@ -144,7 +144,7 @@ app.get("/urls/:id", (req, res) => {
     shortURL: req.params.id,
     longURL: urlDatabase[req.params.id]["longURL"],
     user_id: user_id,
-    email: usersDatabase[userId]["email"],
+    email: usersDatabase[user_id]["email"],
   };
   res.render("urls_show", templateVars);
 });
@@ -167,9 +167,10 @@ app.post("/urls/:id", (req, res) => {
   if (!user) {
     res.redirect("/login");
   } else {
-    urlDatabase[req.params.id]["longURL"] = req.body["longURL"];
+    urlDatabase[req.params.id]["longURL"] = req.body["longUrl"];
     return res.redirect("/urls");
   }
+  console.log(urlDatabase);
 });
 
 // generates a new shortURL and adds it to the urlDatabase
@@ -242,15 +243,6 @@ app.post("/register", (req, res) => {
     usersDatabase[userID] = newUser;
     return res.redirect("/login");
   }
-});
-
-//render what you want routes:
-app.get("/getIds", (_req, res) => {
-  res.json(usersDatabase);
-});
-
-app.get("/getUrls", (_req, res) => {
-  res.json(urlDatabase);
 });
 
 app.listen(PORT, () => {
