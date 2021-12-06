@@ -3,6 +3,13 @@ const morgan = require("morgan");
 // const cookieParser = require("cookie-parser");
 const cookieSession = require("cookie-session");
 const bodyParser = require("body-parser");
+const {
+  getUserByEmail,
+  generateRandomString,
+  checkEmailAndPasswordExist,
+  getIDfromEmail,
+  urlsForUser,
+} = require("./helpers.js");
 
 const bcrypt = require("bcrypt");
 const saltRounds = 10;
@@ -40,63 +47,6 @@ const usersDatabase = {
     password: "dishwasher-funk",
   },
 };
-
-//a function that returns a string of 6 random alphanumeric characters:
-function generateRandomString() {
-  const tempArray = [];
-  const randomString =
-    "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
-  for (let i = 0; i < 6; i++) {
-    tempArray.push(
-      randomString[Math.floor(Math.random() * randomString.length)]
-    );
-  }
-  return tempArray.join("");
-}
-
-//a function that returns a boolean value indicating whether the email is already in use in the database of users
-function checkEmailExist(email, userDB) {
-  for (const key in userDB) {
-    if (userDB[key].email === email) {
-      return true;
-    }
-  }
-  return false;
-}
-
-// a function that returns a boolean value indicating whether the email and password match the user in the database of users or not
-function checkEmailAndPasswordExist(email, password, userDb) {
-  for (const key in userDb) {
-    if (
-      userDb[key].email === email &&
-      bcrypt.compareSync(password, userDb[key].password)
-    ) {
-      return true;
-    }
-  }
-  return false;
-}
-
-function getIDfromEmail(email, password, userDb) {
-  for (const key in userDb) {
-    if (
-      userDb[key].email === email &&
-      bcrypt.compareSync(password, userDb[key].password)
-    ) {
-      return key;
-    }
-  }
-}
-// a function that returns the urls object associated with the userId in the database of users if the userId is valid
-function urlsForUser(id, urlDb) {
-  const urls = {};
-  for (const key in urlDb) {
-    if (urlDb[key].userId === id) {
-      urls[key] = urlDb[key];
-    }
-  }
-  return urls;
-}
 
 app.get("/", (req, res) => {
   res.send("Hello!");
@@ -203,7 +153,7 @@ app.post("/login", (req, res) => {
   const email = req.body["email"];
   const password = req.body["password"];
 
-  if (!checkEmailExist(email, usersDatabase)) {
+  if (!getUserByEmail(email, usersDatabase)) {
     return res.status(403).send("email cannot be found, please register");
   }
   if (!checkEmailAndPasswordExist(email, password, usersDatabase)) {
@@ -235,7 +185,7 @@ app.post("/register", (req, res) => {
     res.send("Empty Fields detected");
     return;
   }
-  if (checkEmailExist(email, usersDatabase)) {
+  if (getUserByEmail(email, usersDatabase)) {
     res.statusCode = 400;
     res.send("Email Already Exists");
     return;
