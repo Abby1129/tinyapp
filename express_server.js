@@ -1,8 +1,8 @@
 const express = require("express");
 const morgan = require("morgan");
-// const cookieParser = require("cookie-parser");
 const cookieSession = require("cookie-session");
 const bodyParser = require("body-parser");
+
 const {
   getUserByEmail,
   generateRandomString,
@@ -33,8 +33,6 @@ const urlDatabase = {
   i3BoGr: { longURL: "https://www.google.ca", userId: "aJ48lW" },
 };
 
-//const urlDatabase = {};
-
 const usersDatabase = {
   userRandomID: {
     id: "userRandomID",
@@ -48,10 +46,15 @@ const usersDatabase = {
   },
 };
 
+//////////////////////////////////////
+//////////////GET ROUTES//////////////
+//////////////////////////////////////
+
 app.get("/", (req, res) => {
   res.send("Hello!");
 });
 
+// returns the index page, empty for new users and populated with urls for existing users
 app.get("/urls", (req, res) => {
   if (!req.session.user_id) {
     return res.redirect("/login");
@@ -66,6 +69,7 @@ app.get("/urls", (req, res) => {
   return res.render("urls_index", templateVars);
 });
 
+// returns the form to create a new URL
 app.get("/urls/new", (req, res) => {
   const userId = req.session.user_id;
   if (!userId) {
@@ -79,6 +83,7 @@ app.get("/urls/new", (req, res) => {
   }
 });
 
+// returns the form to create a new user
 app.get("/register", (req, res) => {
   const templateVars = {
     email: req.body["email"],
@@ -88,9 +93,10 @@ app.get("/register", (req, res) => {
   res.render("urls_register", templateVars);
 });
 
+// shows the page for a specific short URL and its long URL
 app.get("/urls/:id", (req, res) => {
-  const user_id = req.session.user_id;
-  let templateVars = {
+  const user_id = req.session.user_id; //
+  const templateVars = {
     shortURL: req.params.id,
     longURL: urlDatabase[req.params.id]["longURL"],
     user_id: user_id,
@@ -99,17 +105,22 @@ app.get("/urls/:id", (req, res) => {
   res.render("urls_show", templateVars);
 });
 
-// handles the link to the website. when short url is clicked, long url is triggered
+// redirects to the website for the short URL if valid
 app.get("/u/:id", (req, res) => {
   urlDatabase[req.params.id]
     ? res.redirect(urlDatabase[req.params.id]["longURL"])
     : res.send("Error: This is not a valid short URL");
 });
 
+// returns the form to login
 app.get("/login", (req, res) => {
   const user = req.session["user_id"];
   res.render("urls_login", { user_id: user });
 });
+
+//////////////////////////////////////
+//////////////POST ROUTES//////////////
+//////////////////////////////////////
 
 //updates or edit the long url for short url
 app.post("/urls/:id", (req, res) => {
@@ -117,13 +128,23 @@ app.post("/urls/:id", (req, res) => {
   if (!user) {
     res.redirect("/login");
   } else {
-    urlDatabase[req.params.id]["longURL"] = req.body["longUrl"];
+    urlDatabase[req.params.id]["longURL"] = req.body["longURL"];
     return res.redirect("/urls");
   }
-  console.log(urlDatabase);
 });
 
-// generates a new shortURL and adds it to the urlDatabase
+//deletes url from urlDatabase and redirects to the urls page
+app.post("/urls/:id/delete", (req, res) => {
+  const user = req.session["user_id"];
+  if (!user) {
+    res.redirect("/login");
+  } else {
+    delete urlDatabase[req.params.id];
+    return res.redirect("/urls");
+  }
+});
+
+// generates a new shortURL and adds it to the urlDatabase if the user is logged in, if not, redirects to the login page
 app.post("/urls", (req, res) => {
   const user = req.session["user_id"];
   if (!user) {
@@ -138,17 +159,7 @@ app.post("/urls", (req, res) => {
   }
 });
 
-//deletes url
-app.post("/urls/:id/delete", (req, res) => {
-  const user = req.session["user_id"];
-  if (!user) {
-    res.redirect("/login");
-  } else {
-    delete urlDatabase[req.params.id];
-    return res.redirect("/urls");
-  }
-});
-
+// creates a new user and adds it to the usersDatabase and sets the cookie session to the user's id and redirects to the urls page if successful or redirects to the register page if unsuccessful
 app.post("/login", (req, res) => {
   const email = req.body["email"];
   const password = req.body["password"];
@@ -164,12 +175,7 @@ app.post("/login", (req, res) => {
   }
 });
 
-app.post("/logout", (req, res) => {
-  req.session = null;
-  //res.clearCookie("user_id");
-  res.redirect("/urls");
-});
-
+// creates a new user and adds it to the usersDatabase and redirects to the login page if successful or returns an error if unsuccessful
 app.post("/register", (req, res) => {
   const { email, password } = req.body;
   const userID = generateRandomString();
@@ -193,6 +199,11 @@ app.post("/register", (req, res) => {
     usersDatabase[userID] = newUser;
     return res.redirect("/login");
   }
+});
+
+app.post("/logout", (req, res) => {
+  req.session = null;
+  res.redirect("/urls");
 });
 
 app.listen(PORT, () => {

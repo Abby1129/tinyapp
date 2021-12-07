@@ -1,27 +1,15 @@
 const bcrypt = require("bcrypt");
 
-const usersDatabase = {
-  userRandomID: {
-    id: "userRandomID",
-    email: "user@example.com",
-    password: "purple-monkey-dinosaur",
-  },
-  user2RandomID: {
-    id: "user2RandomID",
-    email: "user2@example.com",
-    password: "dishwasher-funk",
-  },
-};
-
+//function that returns a user object when its provided with an email that exists in the database
 const getUserByEmail = function (email, database) {
   for (let user in database) {
-    console.log(database[user].email);
     if (database[user].email === email) {
       return database[user];
     }
   }
 };
 
+//function checks if email and corresponding bcrypted password is in the database object, and returns true or false if it is or not
 const checkEmailAndPasswordExist = function (email, password, userDb) {
   for (const key in userDb) {
     if (
@@ -34,6 +22,7 @@ const checkEmailAndPasswordExist = function (email, password, userDb) {
   return false;
 };
 
+//function checks if email and bcrypted password match what is in the database object, and returns the key
 const getIDfromEmail = function (email, password, userDb) {
   for (const key in userDb) {
     if (
@@ -44,7 +33,8 @@ const getIDfromEmail = function (email, password, userDb) {
     }
   }
 };
-// a function that returns the urls object associated with the userId in the database of users if the userId is valid
+
+//function that returns the urls object associated with the userId in the database of users if the userId is valid
 const urlsForUser = function (id, urlDb) {
   const urls = {};
   for (const key in urlDb) {
@@ -55,6 +45,7 @@ const urlsForUser = function (id, urlDb) {
   return urls;
 };
 
+//function that generates a random string of length 6 and returns it as a shortURL
 const generateRandomString = function () {
   const tempArray = [];
   const randomString =
