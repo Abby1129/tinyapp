@@ -18,18 +18,30 @@
         <a class="nav-item nav-link" href="/urls/new">Create New URL</a>
       </div>
     </div>
-    <% if (!username){ %>
-    <form method="post" action="/login" class="form-inline">
-      <div class="form-group mb-2">
-        <input type="text" name="username" placeholder="username" class="form-control" style="height:35px; width: 300px; margin: .5em;">
-        <button type="login" class="btn btn-outline-dark my-2 my-sm-0">Login</button>
+
+    <% if (!user_id){ %>
+    <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+      <div class="navbar-nav">
+        <a class="nav-item nav-link" href="/register">Register</a>
+        <a class="nav-item nav-link" href="/login">Login</a>
       </div>
-    </form>
+    </div>
+
     <% } else { %>
-    <form method="post" action="/logout" class="form-inline">
+    <form method="POST" action="/logout" class="form-inline">
       <div class="form-group mb-2">
-        <span class="navbar-text" style="color:black; padding-right: 20px; padding-top: 20px;"><h5>Logged In As: <%= username %>!</h5> </span>
-        <button type="logout"  class="btn btn-outline-dark my-2 my-sm-0" style="margin: .5em;">Logout</button>
+        <span
+          class="navbar-text"
+          style="color: black; padding-right: 20px; padding-top: 20px"
+          ><h5>Logged In As: <%= email %></h5>
+        </span>
+        <button
+          type="logout"
+          class="btn btn-outline-dark my-2 my-sm-0"
+          style="margin: 0.5em"
+        >
+          Logout
+        </button>
       </div>
     </form>
     <% } %>

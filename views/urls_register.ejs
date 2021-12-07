@@ -1,6 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
     <!-- Bootstrap CSS -->
     <link
       rel="stylesheet"
@@ -8,49 +12,47 @@
       integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS"
       crossorigin="anonymous"
     />
-    <title>URL - TinyApp Example</title>
-  </head>
 
+    <title>TinyApp - Registration</title>
+  </head>
   <body>
     <%- include('partials/_header') %>
 
-    <div class="card text-center">
-      <div class="card-header"></div>
-      <div class="card-body">
-        <h5 class="card-title">TinyURL for: <%=longURL%></h5>
-        <p class="card-text">
-          Short URL: <a href="/u/<%= shortURL %>"><%= shortURL %></a>
-        </p>
+    <div class="container">
+      <div class="form-group">
+        <div class="col-md-12">
+          <h1>Register</h1>
+        </div>
       </div>
-     
-      <div class="card text-center">
-        <div class="card-body" >
-          <h2 class="card-title">Edit</h2>
-          <form
-            class=" form-inline justify-content-center"
-            action="/urls/<%= shortURL %>"
-            method="POST">
-            <div class="form-group>
-              <label for="longURL">New Url:</label>
+      <div class="form-group">
+        <div class="col-md-12">
+          <form action="/register" method="POST">
+            <div class="form-group">
+              <label for="user_id">Email</label>
               <input
-                type="text"
+                type="email"
                 class="form-control"
-                id="longURL"
-                name="longURL"
-                placeholder="http://"
-              value="<%= longURL%>"
-               />
-              <button type="submit" class="btn btn-primary">Update</button>
+                id="user_id"
+                name="email"
+                placeholder="Enter email"
+              />
             </div>
+            <div class="form-group">
+              <label for="password">Password</label>
+              <input
+                type="password"
+                class="form-control"
+                id="password"
+                name="password"
+                placeholder="Enter password"
+              />
+            </div>
+            <button type="submit" class="btn btn-primary">Register</button>
           </form>
         </div>
       </div>
     </div>
 
-      
-  
-      <div class="card-footer text-muted"></div>
-    </div>
     <!-- Bootstrap JS -->
     <script
       src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
