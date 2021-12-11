@@ -9,6 +9,7 @@ const {
   checkEmailAndPasswordExist,
   getIDfromEmail,
   urlsForUser,
+  isEmpty,
 } = require("./helpers.js");
 
 const bcrypt = require("bcrypt");
@@ -95,14 +96,23 @@ app.get("/register", (req, res) => {
 
 // shows the page for a specific short URL and its long URL
 app.get("/urls/:id", (req, res) => {
-  const user_id = req.session.user_id; //
-  const templateVars = {
-    shortURL: req.params.id,
-    longURL: urlDatabase[req.params.id]["longURL"],
-    user_id: user_id,
-    email: usersDatabase[user_id]["email"],
-  };
-  res.render("urls_show", templateVars);
+  const user_id = req.session.user_id;
+
+  if (user_id) {
+    if (isEmpty(urlsForUser(user_id, urlDatabase))) {
+      res.send("Error: Url does not belong to User");
+      return;
+    }
+    const templateVars = {
+      shortURL: req.params.id,
+      longURL: urlDatabase[req.params.id]["longURL"],
+      user_id: user_id,
+      email: usersDatabase[user_id]["email"],
+    };
+    res.render("urls_show", templateVars);
+    return;
+  }
+  res.send("Error: You are Not Logged in");
 });
 
 // redirects to the website for the short URL if valid
@@ -197,7 +207,8 @@ app.post("/register", (req, res) => {
     return;
   } else {
     usersDatabase[userID] = newUser;
-    return res.redirect("/login");
+    req.session["user_id"] = userID;
+    res.redirect("/urls");
   }
 });
 
