@@ -38,7 +38,7 @@ const getIDfromEmail = function (email, password, userDb) {
 const urlsForUser = function (id, urlDb) {
   const urls = {};
   for (const key in urlDb) {
-    if (urlDb[key].userId === id) {
+    if (urlDb[key]["userId"] === id) {
       urls[key] = urlDb[key];
     }
   }
@@ -58,10 +58,19 @@ const generateRandomString = function () {
   return tempArray.join("");
 };
 
+//check if object is empty
+const isEmpty = (obj) => {
+  for (let key in obj) {
+    if (obj.hasOwnProperty(key)) return false;
+  }
+  return true;
+};
+
 module.exports = {
   getUserByEmail,
   checkEmailAndPasswordExist,
   getIDfromEmail,
   urlsForUser,
   generateRandomString,
+  isEmpty,
 };
