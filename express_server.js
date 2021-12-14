@@ -9,7 +9,7 @@ const {
   checkEmailAndPasswordExist,
   getIDfromEmail,
   urlsForUser,
-  isEmpty,
+  checkUrlOwnership,
 } = require("./helpers.js");
 
 const bcrypt = require("bcrypt");
@@ -99,8 +99,8 @@ app.get("/urls/:id", (req, res) => {
   const user_id = req.session.user_id;
 
   if (user_id) {
-    if (isEmpty(urlsForUser(user_id, urlDatabase))) {
-      res.send("Error: Url does not belong to User");
+    if (!checkUrlOwnership(user_id, req.params.id, urlDatabase)) {
+      res.send("Error: User does not own this URL");
       return;
     }
     const templateVars = {

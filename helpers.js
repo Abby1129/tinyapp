@@ -45,6 +45,13 @@ const urlsForUser = function (id, urlDb) {
   return urls;
 };
 
+const checkUrlOwnership = function (userId, shortUrlId, urlDb) {
+  if (urlDb[shortUrlId]["userId"] === userId) {
+    return true;
+  }
+  return false;
+};
+
 //function that generates a random string of length 6 and returns it as a shortURL
 const generateRandomString = function () {
   const tempArray = [];
@@ -73,4 +80,5 @@ module.exports = {
   urlsForUser,
   generateRandomString,
   isEmpty,
+  checkUrlOwnership,
 };
